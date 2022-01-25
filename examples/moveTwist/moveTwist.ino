@@ -1,7 +1,9 @@
 #include <differential_drive.h>
-#include <scicobot_hardware.h>
+#include <scicobot_arduino.h>
 #include <led_debug.h>
 #include <serial_debug.h>
+
+#define DEBUG_ENABLE 0
 
 ScicobotRos scicobotRos;
 
@@ -11,8 +13,6 @@ DifferentialDrive differentialDrive;
 
 unsigned long timeNow;
 unsigned long timeBefor;
-
-Debug debugObj(Serial1);
 
 void subscriber_MotorControl_callback(const void * msgin)
 {

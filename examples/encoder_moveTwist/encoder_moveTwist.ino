@@ -1,4 +1,4 @@
-#include <scicobot_hardware.h>
+#include <scicobot_arduino.h>
 #include <led_debug.h>
 #include <serial_debug.h>
 #include <encoder.h>
@@ -31,8 +31,6 @@ ScicobotRosMotor scicobotRosMotor;
 ScicobotRos scicobotRos;
 
 ScicobotRosEncoder scicobotRosEncoder;
-
-Debug debugObj(Serial1);
 
 void count_encoder_left()
 {

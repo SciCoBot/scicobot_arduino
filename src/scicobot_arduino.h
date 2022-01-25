@@ -36,6 +36,8 @@
 #include "scicobot_ros_motor.h"
 #include "scicobot_ros_ultrasonic.h"
 #include "scicobot_ros_encoder.h"
+#include <scicobot_ros_move.h>
+
 
 #endif //SCICOBOT_ARDUINO_H
 

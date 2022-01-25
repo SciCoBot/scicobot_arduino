@@ -1,17 +1,14 @@
-#include <scicobot_hardware.h>
-#include <ros_move_on/scicobot_ros_move.h>
+#include <scicobot_arduino.h>
 #include <led_debug.h>
 #include <serial_debug.h>
 #include <encoder.h>
+#include <differential_drive.h>
 #include <ultrasonic.h>
-#include <simple_motor_dc.h>
 
+#define DEBUG_ENABLE 0
 
-#define DEBUG_ENABLE 1
-
-//Pins ultrasonic
-#define PIN_TRIGGER  53
-#define PIN_ECHO  50
+unsigned long timeNow;
+unsigned long timeBefor;
 
 //Pins Motor
 #define IN1_A 7
@@ -25,74 +22,19 @@
 #define OUT_ENCODER_RIGHT 51
 #define OUT_ENCODER_LEFT 52
 
-//Motors
-SimpleMotor motorRight;
-SimpleMotor motorLeft;
+//Pins Ultrasonic
+#define PIN_TRIGGER  53
+#define PIN_ECHO  50
 
-//Encoder
 Encoder encoderRight;
 Encoder encoderLeft;
-
-//Ultrasonic
 Ultrasonic frontalUltrasonic;
 
-//Micro-ROS
+DifferentialDrive differentialDrive;
+ScicobotRosMotor scicobotRosMotor;
 ScicobotRos scicobotRos;
-
 ScicobotRosEncoder scicobotRosEncoder;
-
 ScicobotRosUltrasonic scicobotRosUltrasonic;
-
-ScicobotRosMove scicobotRosMove;
-
-Debug debugObj(Serial1);
-
-void subscriberCallbackMove(const void * msgin)
-{
-  const std_msgs__msg__Bool * msg = (const std_msgs__msg__Bool *)msgin;
-  
-  #if DEBUG_ENABLE ==1 
-    debugObj.DEBUGLN(msg->data);  
-  #endif
-  
-  if (msg->data == 0)
-  {
-
-    motorRight.forward(255);
-    motorLeft.backward(255);
-
-    
-    #if DEBUG_ENABLE ==1 
-      debugObj.DEBUGLN("gira");
-    #endif
-  }
-  else
-  {
-    motorRight.forward(255);
-    motorLeft.forward(255);
-    
-    #if DEBUG_ENABLE ==1 
-      debugObj.DEBUGLN("Continua para frente");
-    #endif
-    
- }
-     #if DEBUG_ENABLE ==1 
-      debugObj.DEBUGLN("Continua para frente");
-    #endif
-}
-
-void timerCallbackUltrasonic(rcl_timer_t * timer, int64_t last_call_time)
-{  
-  RCLC_UNUSED(last_call_time);
-  if (timer != NULL) {
-   (*scicobotRosUltrasonic.get_rclc_msg()).data = frontalUltrasonic.measureDistanceCm(25);
-   DEBUG_WARNING_MICR0_ROS(rcl_publish(scicobotRosUltrasonic.get_rclc_publisher(), scicobotRosUltrasonic.get_rclc_msg(), NULL));
-
-  #if DEBUG_ENABLE ==1 
-    debugObj.DEBUGLN("timerCallbackUltrasonic()");  
-  #endif
-  }
-}
 
 void count_encoder_left()
 {
@@ -104,17 +46,23 @@ void count_encoder_right()
   encoderRight.incrementPulses();
 }
 
+void subscriber_MotorControl_callback(const void * msgin)
+{
+  const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
+     
+  differentialDrive.differentialForPWM(msg->linear.x, msg->angular.z);
+  
+  timeBefor = micros();
+}
+
 void callback_encoder_right(rcl_timer_t * timer, int64_t last_call_time)
 {  
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {
     (*scicobotRosEncoder.get_rclc_msg_ritght()).data = encoderRight.readAndReset();
     DEBUG_WARNING_MICR0_ROS(rcl_publish(scicobotRosEncoder.get_rclc_publisher_ritght(), scicobotRosEncoder.get_rclc_msg_ritght(), NULL));
+    
   }
-  
-  #if DEBUG_ENABLE ==1 
-    debugObj.DEBUGLN("callback_encoder_right()");  
-  #endif
 }
 
 void callback_encoder_left(rcl_timer_t * timer, int64_t last_call_time)
@@ -123,11 +71,17 @@ void callback_encoder_left(rcl_timer_t * timer, int64_t last_call_time)
   if (timer != NULL) {
     (*scicobotRosEncoder.get_rclc_msg_left()).data = encoderLeft.readAndReset();
     DEBUG_WARNING_MICR0_ROS(rcl_publish(scicobotRosEncoder.get_rclc_publisher_left(), scicobotRosEncoder.get_rclc_msg_left(), NULL));
+    
   }
-  
-  #if DEBUG_ENABLE ==1 
-    debugObj.DEBUGLN("callback_encoder_left()");  
-  #endif
+}
+
+void timerCallbackUltrasonic(rcl_timer_t * timer, int64_t last_call_time)
+{  
+  RCLC_UNUSED(last_call_time);
+  if (timer != NULL) {
+   (*scicobotRosUltrasonic.get_rclc_msg()).data = frontalUltrasonic.measureDistanceCm(25);
+   DEBUG_WARNING_MICR0_ROS(rcl_publish(scicobotRosUltrasonic.get_rclc_publisher(), scicobotRosUltrasonic.get_rclc_msg(), NULL));
+  }
 }
 
 void setup() 
@@ -135,33 +89,34 @@ void setup()
   Serial1.begin(115200);
   
   pinMode(LED_DEBUG_PIN, OUTPUT);
-
-  frontalUltrasonic.init(PIN_TRIGGER, PIN_ECHO);
-
-  motorRight.init(IN1_A, IN2_A);
-  motorLeft.init(IN1_B, IN2_B);
+  
+  differentialDrive.init();
 
   encoderRight.init(OUT_ENCODER_RIGHT, &count_encoder_right);
   encoderLeft.init(OUT_ENCODER_LEFT, &count_encoder_left);
   
+  frontalUltrasonic.init(PIN_TRIGGER, PIN_ECHO);
+  
   scicobotRos.init();
   
+  scicobotRosMotor.initRosMotorSubscriber(&scicobotRos, subscriber_MotorControl_callback);
+
   scicobotRosEncoder.initRosEncoderPublisher(&scicobotRos, callback_encoder_right, callback_encoder_left);
 
   scicobotRosUltrasonic.initRosUltrasonicPublisher(&scicobotRos, timerCallbackUltrasonic);
-  
-  scicobotRosMove.initRosMoveSubscriber(&scicobotRos, subscriberCallbackMove);
-    
-  motorRight.forward(255);
-  motorLeft.forward(255);
 }
 
 void loop() 
 {
   DEBUG_ERROR_MICR0_ROS(rclc_executor_spin_some(scicobotRosEncoder.get_rclc_executor(), RCL_MS_TO_NS(100)));
 
-  DEBUG_ERROR_MICR0_ROS(rclc_executor_spin_some(scicobotRosUltrasonic.get_rclc_executor(), RCL_MS_TO_NS(100)));
-
-  DEBUG_ERROR_MICR0_ROS(rclc_executor_spin_some(scicobotRosMove.get_rclc_executor(), RCL_MS_TO_NS(100)));
+  DEBUG_ERROR_MICR0_ROS(rclc_executor_spin_some(scicobotRosMotor.get_rclc_executor(), RCL_MS_TO_NS(100)));
   
-}
+  DEBUG_ERROR_MICR0_ROS(rclc_executor_spin_some(scicobotRosUltrasonic.get_rclc_executor(), RCL_MS_TO_NS(100)));
+  
+  timeNow = micros();
+  
+  if(((timeNow - timeBefor) > 1000000))
+  {
+   differentialDrive.differentialForPWM(0, 0);
+  }}

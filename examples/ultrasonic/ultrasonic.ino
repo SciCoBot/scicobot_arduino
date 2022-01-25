@@ -1,4 +1,4 @@
-#include <scicobot_hardware.h>
+#include <scicobot_arduino.h>
 #include <led_debug.h>
 #include <serial_debug.h>
 #include <ultrasonic.h>
@@ -13,8 +13,6 @@ Ultrasonic frontalUltrasonic;
 ScicobotRos scicobotRos;
 
 ScicobotRosUltrasonic scicobotRosUltrasonic;
-
-Debug debugObj(Serial1);
 
 void timerCallbackUltrasonic(rcl_timer_t * timer, int64_t last_call_time)
 {  
