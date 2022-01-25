@@ -20,5 +20,5 @@ São utilizadas as seguintes bibliotecas:
 - [led_debug](https://github.com/SciCoBot/led_debug) para debug visual, principalmente da micro_ros_arduino
 - [differential_drive](https://github.com/SciCoBot/differential_drive): converte comandos diferênciais em movimento para o robô.
 
-Nota: é altamente recomendavél que utilize [build_scicobot_arduino](https://github.com/SciCoBot/build_scicobot_arduino) para construção e manutenção das dependências.
+Nota: é altamente recomendável que utilize [build_scicobot_arduino](https://github.com/SciCoBot/build_scicobot_arduino) para construção e manutenção das dependências.
 
