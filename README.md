@@ -22,7 +22,7 @@ São utilizadas as seguintes bibliotecas:
 
 Nota: é altamente recomendável que utilize [build_scicobot_arduino](https://github.com/SciCoBot/build_scicobot_arduino) para construção e manutenção das dependências.
 
-## Descrição
+## Utilizando exemplos junto com o terminal no Raspberry
 
 ### moveTwist
 
@@ -156,3 +156,5 @@ Na janela 4 pode-se utilizar as teclas expecificadas para movimentar o robô.
 Na janela 5 pode-se verificar as informações publicadas do sensor ultrassônico.
 
 Observe que para os exemplos tem se uma dinâmica repetitiva para a janela 1, onde a comunicação entre Arduino e Raspberry é executada. Essa janela sempre vai estar presente para qualquer trabalho implementado.
+
+## Utilizando exemplos junto com pacotes de scicobot_rasp
