@@ -146,23 +146,9 @@ source /opt/ros/foxy/setup.bash
 ros2 topic echo /frontal_ultrasonic
 ```
 Na janela 2 pode-se verificar as informações publicadas do sensor encoder esquerdo.
+
 Na janela 3 pode-se verificar as informações publicadas do sensor encoder direito.
 Na janela 4 pode-se utilizar as teclas expecificadas para movimentar o robô.
 Na janela 5 pode-se verificar as informações publicadas do sensor ultrassônico.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Observe que para os exemplos tem se uma dinâmica repetitiva para a janela 1, onde a comunicação entre Arduino e Raspberry é executada. Essa janela sempre vai estar presente para qualquer trabalho implementado.
