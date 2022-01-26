@@ -22,3 +22,22 @@ São utilizadas as seguintes bibliotecas:
 
 Nota: é altamente recomendável que utilize [build_scicobot_arduino](https://github.com/SciCoBot/build_scicobot_arduino) para construção e manutenção das dependências.
 
+## Descrição
+
+### moveTwist
+Permite que o Arduino se increva em um tópico ROS 2 chamado /cmd_vel para receber comandos de controle diferencial. Sendo que, os comando recebidos são convertidos em movimento a partir da biblioteca differential_drive.
+
+A partir deste exemplo é possível movimentar o robô utilizando o teclado. Para isso, execute no Raspberry:
+- Janela 1:
+```
+source /opt/ros/foxy/setup.bash
+cd microros_ws
+source install/local_setup.bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+```
+- Janela 2:
+```
+source /opt/ros/foxy/setup.bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+Na janela 2 pode-se utilizar as teclas expecificadas para movimentar o robô.
