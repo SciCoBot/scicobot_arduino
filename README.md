@@ -25,9 +25,13 @@ Nota: é altamente recomendável que utilize [build_scicobot_arduino](https://gi
 ## Descrição
 
 ### moveTwist
-Permite que o Arduino se increva em um tópico ROS 2 chamado /cmd_vel para receber comandos de controle diferencial. Sendo que, os comando recebidos são convertidos em movimento a partir da biblioteca differential_drive.
 
+Implementa, a partir de ros_motor_control, um inscrito ROS 2 que receber comandos de controle diferencial do tópico /frontal_ultrasonicque . Sendo que, os comando recebidos são convertidos em movimento a partir da biblioteca differential_drive.ultrassônico. 
+```
+Fluxo de dados: RASPBERRY -> ARDUINO
+```
 A partir deste exemplo é possível movimentar o robô utilizando o teclado. Para isso, execute no Raspberry:
+
 - Janela 1:
 ```
 source /opt/ros/foxy/setup.bash
@@ -41,3 +45,35 @@ source /opt/ros/foxy/setup.bash
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 Na janela 2 pode-se utilizar as teclas expecificadas para movimentar o robô.
+
+### ultrasonic: 
+
+Implementa, a partir de ros_ultrasonic, um editor ROS 2 que publica dados do sensor ultrassônico em /frontal_ultrasonic. 
+```
+Fluxo de dados: RASPBERRY <- ARDUINO
+```
+A partir deste exemplo é possível verificar os valores lidos pelo ultrassônico no Raspberry. Para isso, execute no Raspberry:
+
+- Janela 1:
+```
+source /opt/ros/foxy/setup.bash
+cd microros_ws
+source install/local_setup.bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+```
+- Janela 2:
+```
+source /opt/ros/foxy/setup.bash
+ros2 tipic echo /frontal_ultrasonic
+```
+
+
+
+
+
+
+encoder_moveTwist: possibilita que o robô receba mensagens de controle diferencial e aplique a lógica nos motores e publica os dados do encoder em um tópico ROS 2. A partir deste exemplo é possível verificar a contagem dos encoders enquanto o robô se movimenta;
+•	moveOn_encoder_ultrasonic: possibilita a publicação de mensagens ROS 2 dos sensores encoders e ultrassônico, além de se inscrever em um tópico que fornece informações de movimento através da análise dos dados dos sensores. A partir deste exemplo o robô movimenta  possível verificar os valores lidos pelo ultrassônico e encoders enquanto recebe o;
+•	moveTwist_encoder_ultrasonic: permite a inscrição em um tópico ROS 2 para receber comandos de controle diferencial enquanto publica dados dos sensores encoder e ultrassônico. A partir deste exemplo é possível verificar os valores lidos pelo ultrassônico e encoders enquanto o robô se locomove;
+
+
