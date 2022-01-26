@@ -26,7 +26,7 @@ Nota: é altamente recomendável que utilize [build_scicobot_arduino](https://gi
 
 ### moveTwist
 
-Implementa, a partir de ros_motor_control, um inscrito ROS 2 que receber comandos de controle diferencial do tópico /frontal_ultrasonicque . Sendo que, os comando recebidos são convertidos em movimento a partir da biblioteca differential_drive.ultrassônico. 
+Implementa, a partir de ros_motor_control, um inscrito ROS 2 que receber comandos de controle diferencial do tópico /cmd_vel. Sendo que, os comando recebidos são convertidos em movimento a partir da biblioteca differential_drive.ultrassônico. 
 ```
 Fluxo de dados: RASPBERRY -> ARDUINO
 ```
@@ -66,14 +66,47 @@ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
 source /opt/ros/foxy/setup.bash
 ros2 tipic echo /frontal_ultrasonic
 ```
+Na janela 2 pode-se verificar as informações publicadas do sensor ultrassônico.
+
+### encoder_moveTwist 
+
+Implementa, a partir de ros_encoder e ros_motor_control, um editor e um inscrito ROS 2 que publica dados dos sensores encoder em /encoder_right e /encoder_left e recebe comandos de controle diferencial em /cmd_vel
+```
+Fluxo de dados: RASPBERRY <-> ARDUINO
+```
+A partir deste exemplo é possível verificar a contagem dos encoders no Raspberry enquanto o robô se movimenta. Para isso, execute no Raspberry:
+ 
+- Janela 1:
+```
+source /opt/ros/foxy/setup.bash
+cd microros_ws
+source install/local_setup.bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+```
+- Janela 2:
+```
+source /opt/ros/foxy/setup.bash
+ros2 tipic echo /encoder_right
+```
+- Janela 3:
+```
+source /opt/ros/foxy/setup.bash
+ros2 tipic echo /encoder_left
+```
+- Janela 4:
+```
+source /opt/ros/foxy/setup.bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+Na janela 2 pode-se verificar as informações publicadas do sensor encoder esquerdo.
+Na janela 3 pode-se verificar as informações publicadas do sensor encoder direito.
+Na janela 4 pode-se utilizar as teclas expecificadas para movimentar o robô.
 
 
 
+moveOn_encoder_ultrasonic: possibilita a publicação de mensagens ROS 2 dos sensores encoders e ultrassônico, além de se inscrever em um tópico que fornece informações de movimento através da análise dos dados dos sensores. A partir deste exemplo o robô movimenta  possível verificar os valores lidos pelo ultrassônico e encoders enquanto recebe o;
 
 
-
-encoder_moveTwist: possibilita que o robô receba mensagens de controle diferencial e aplique a lógica nos motores e publica os dados do encoder em um tópico ROS 2. A partir deste exemplo é possível verificar a contagem dos encoders enquanto o robô se movimenta;
-•	moveOn_encoder_ultrasonic: possibilita a publicação de mensagens ROS 2 dos sensores encoders e ultrassônico, além de se inscrever em um tópico que fornece informações de movimento através da análise dos dados dos sensores. A partir deste exemplo o robô movimenta  possível verificar os valores lidos pelo ultrassônico e encoders enquanto recebe o;
-•	moveTwist_encoder_ultrasonic: permite a inscrição em um tópico ROS 2 para receber comandos de controle diferencial enquanto publica dados dos sensores encoder e ultrassônico. A partir deste exemplo é possível verificar os valores lidos pelo ultrassônico e encoders enquanto o robô se locomove;
+moveTwist_encoder_ultrasonic: permite a inscrição em um tópico ROS 2 para receber comandos de controle diferencial enquanto publica dados dos sensores encoder e ultrassônico. A partir deste exemplo é possível verificar os valores lidos pelo ultrassônico e encoders enquanto o robô se locomove;
 
 
