@@ -110,8 +110,34 @@ Implementa, a partir de ros_encoder, ros_ultrasonic e ros_move_on, dois editores
 ```
 Fluxo de dados: RASPBERRY <-> ARDUINO
 ```
-PRECISA SER DEFINIDO
-
+- Janela 1:
+```
+source /opt/ros/foxy/setup.bash
+cd microros_ws
+source install/local_setup.bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+```
+- Janela 2:
+```
+source /opt/ros/foxy/setup.bash
+ros2 tipic echo /encoder_right
+```
+- Janela 3:
+```
+source /opt/ros/foxy/setup.bash
+ros2 tipic echo /encoder_left
+```
+- Janela 4:
+```
+source /opt/ros/foxy/setup.bash
+ros2 topic echo /frontal_ultrasonic
+```
+- Janela 5:
+```
+source /opt/ros/foxy/setup.bash
+ros2 topic pub --once /move_on std_msgs/msg/ "{bool: {false}"
+ros2 topic pub --once /move_on std_msgs/msg/ "{bool: {true}"
+```
 ### moveTwist_encoder_ultrasonic
 
 Implementa, a partir de ros_encoder, ros_ultrasonic e ros_motor_control, dois editores e um inscrito ROS 2. Os editores são para publicar os dados dos sensores encoders e ultrassônico, que publicam nos tópicos /encoder_left, /encoder_right e /frontal_ultrasonic, respectivamente. O inscrito é utilizado para recebe comandos de controle diferencial do Raspberry através do tópico /cmd_vel.
